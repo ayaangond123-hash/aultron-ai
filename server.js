@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors({ origin: '*' }));
 
 app.get('/', (req, res) => {
-  res.json({ status: '✅ Aultron AI Backend running!', version: '3.0', models: ['claude', 'gpt', 'gemini'] });
+  res.json({ status: '✅ Aultron AI Backend running!', version: '3.2' });
 });
 
 // CLAUDE
@@ -57,7 +57,7 @@ app.post('/api/gpt', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// GEMINI FREE
+// GEMINI 1.0 PRO (free tier)
 app.post('/api/gemini', async (req, res) => {
   const { messages } = req.body;
   if (!messages) return res.status(400).json({ error: 'No messages' });
@@ -71,15 +71,12 @@ app.post('/api/gemini', async (req, res) => {
     }));
 
     const upstream = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=${KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:streamGenerateContent?alt=sse&key=${KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents,
-          systemInstruction: {
-            parts: [{ text: 'You are Aultron AI, a powerful intelligent assistant. Be helpful, precise, and impressive.' }]
-          },
           generationConfig: { maxOutputTokens: 1024 }
         })
       }
@@ -117,4 +114,4 @@ app.post('/api/gemini', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`🚀 Aultron Backend v3.0 on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Aultron Backend v3.2 on port ${PORT}`));
